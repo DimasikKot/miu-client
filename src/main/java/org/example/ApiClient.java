@@ -36,13 +36,9 @@ public final class ApiClient {
                         )
                         .replace("+", "%20");
         HttpRequest request = HttpRequest.newBuilder()
-
                 .uri(URI.create(SERVER + "/update/" + encodedPack))
-
                 .header("Content-Type", "application/json")
-
                 .POST(HttpRequest.BodyPublishers.ofString(json))
-
                 .build();
 
         HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());

@@ -31,26 +31,17 @@ public final class Updater {
     private static void deleteFiles(Path instance, UpdateResponse response) throws IOException {
 
         if (response.getDelete().isEmpty()) {
-
             System.out.println("Nothing to delete.");
-
             return;
         }
 
         System.out.println("Deleting files...");
-
         for (String relative : response.getDelete()) {
-
             Path file = instance.resolve(relative);
-
             if (!Files.exists(file)) continue;
-
             Files.delete(file);
-
             cleanupEmptyParents(instance, file.getParent());
-
             System.out.println("[OK] Deleted: " + relative);
-
         }
 
     }
@@ -58,18 +49,13 @@ public final class Updater {
     private static void downloadFiles(Path instance, UpdateResponse response) throws Exception {
 
         if (response.getDownload().isEmpty()) {
-
             System.out.println("Nothing to download.");
-
             return;
         }
 
         System.out.println("Downloading files...");
-
         for (DownloadFile file : response.getDownload()) {
-
             Downloader.download(instance, file);
-
         }
 
     }
