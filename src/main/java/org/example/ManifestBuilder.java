@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.model.ClientManifest;
 import org.example.model.ManifestFile;
+import org.example.model.MinecraftInfo;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,23 +18,24 @@ public final class ManifestBuilder {
 
         ClientManifest manifest = new ClientManifest();
 
+
+        MinecraftInfo minecraft = new MinecraftInfo();
+
+        minecraft.setVersion("unknown");
+        minecraft.setLoader("unknown");
+        minecraft.setLoaderVersion("unknown");
+
+        manifest.setMinecraft(minecraft);
+
         scanFolder(instance.resolve("mods"), instance, manifest);
-
         scanFolder(instance.resolve("resourcepacks"), instance, manifest);
-
         // Xaero позже
-
         // servers.dat позже
-
         return manifest;
-
     }
 
-
     private static void scanFolder(Path folder, Path root, ClientManifest manifest) throws IOException {
-
         if (!Files.exists(folder)) return;
-
 
         try (var stream = Files.walk(folder)) {
 
@@ -42,36 +44,16 @@ public final class ManifestBuilder {
                 try {
 
                     String relative = root.relativize(file).toString().replace("\\", "/");
-
-
                     ManifestFile manifestFile = new ManifestFile();
-
-
                     manifestFile.setName(file.getFileName().toString());
-
-
                     manifestFile.setPath(relative);
-
-
                     manifestFile.setSha256(HashUtil.sha256(file));
-
-
                     manifestFile.setSize(Files.size(file));
-
-
-                    manifest.getFiles().add(manifestFile);
-
-
+                    manifest.getFiles().put(relative, manifestFile);
                 } catch (IOException e) {
-
                     throw new RuntimeException(e);
-
                 }
-
             });
-
         }
-
     }
-
 }

@@ -1,13 +1,15 @@
 package org.example.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClientManifest {
 
     private MinecraftInfo minecraft;
 
-    private List<ManifestFile> files = new ArrayList<>();
+    private Map<String, ManifestFile> files = new HashMap<>();
 
     private List<ServerInfo> servers = new ArrayList<>();
 
@@ -22,11 +24,11 @@ public class ClientManifest {
         this.minecraft = minecraft;
     }
 
-    public List<ManifestFile> getFiles() {
+    public Map<String, ManifestFile> getFiles() {
         return files;
     }
 
-    public void setFiles(List<ManifestFile> files) {
+    public void setFiles(Map<String, ManifestFile> files) {
         this.files = files;
     }
 

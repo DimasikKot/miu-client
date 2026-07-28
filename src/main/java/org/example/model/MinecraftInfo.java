@@ -1,16 +1,18 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class MinecraftInfo {
 
     private String version;
     private String loader;
+    @JsonProperty("loader_version")
     private String loaderVersion;
 
     public MinecraftInfo() {
     }
 
     public MinecraftInfo(String version, String loader, String loaderVersion) {
-
         this.version = version;
         this.loader = loader;
         this.loaderVersion = loaderVersion;

@@ -6,74 +6,53 @@ import org.example.model.UpdateResponse;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 public final class ApiClient {
 
-    private static final String SERVER =
-            "http://fundata.mooo.com:10033";
+    private static final String SERVER = "http://fundata.mooo.com:10033";
 
-    private static final ObjectMapper MAPPER =
-            new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private static final HttpClient CLIENT =
-            HttpClient.newHttpClient();
+    private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
     private ApiClient() {
     }
 
-    public static UpdateResponse check(
-            String pack,
-            ClientManifest manifest
-    ) throws IOException, InterruptedException {
+    public static UpdateResponse check(String pack, ClientManifest manifest) throws IOException, InterruptedException {
 
-        String json =
-                MAPPER.writeValueAsString(manifest);
+        String json = MAPPER.writeValueAsString(manifest);
 
-        HttpRequest request =
-                HttpRequest.newBuilder()
+        System.out.println(json);
 
-                        .uri(
-                                URI.create(
-                                        SERVER +
-                                                "/update/" +
-                                                pack
-                                )
+        String encodedPack =
+                URLEncoder.encode(
+                                pack,
+                                StandardCharsets.UTF_8
                         )
+                        .replace("+", "%20");
+        HttpRequest request = HttpRequest.newBuilder()
 
-                        .header(
-                                "Content-Type",
-                                "application/json"
-                        )
+                .uri(URI.create(SERVER + "/update/" + encodedPack))
 
-                        .POST(
-                                HttpRequest.BodyPublishers
-                                        .ofString(json)
-                        )
+                .header("Content-Type", "application/json")
 
-                        .build();
+                .POST(HttpRequest.BodyPublishers.ofString(json))
 
-        HttpResponse<String> response =
-                CLIENT.send(
-                        request,
-                        HttpResponse.BodyHandlers.ofString()
-                );
+                .build();
+
+        HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.body());
 
         if (response.statusCode() != 200) {
-
-            throw new IOException(
-                    "Server returned "
-                            + response.statusCode()
-            );
-
+            throw new IOException("Server returned " + response.statusCode());
         }
 
-        return MAPPER.readValue(
-                response.body(),
-                UpdateResponse.class
-        );
+        return MAPPER.readValue(response.body(), UpdateResponse.class);
 
     }
 
