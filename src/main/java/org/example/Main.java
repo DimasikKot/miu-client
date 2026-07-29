@@ -3,6 +3,7 @@ package org.example;
 import org.example.model.ClientManifest;
 import org.example.model.UpdateResponse;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -23,17 +24,26 @@ public class Main {
         System.out.println("Instance  : " + instance);
 
         ProgressWindow.show();
-        ProgressWindow.setStatus("Сканирование сборки...");
-        ClientManifest manifest = ManifestBuilder.build(instance);
 
-        ProgressWindow.setStatus("Подготовка обновления...");
-        UpdateResponse response = ApiClient.check(pack, manifest);
+        try {
+            ProgressWindow.setStatus("Сканирование сборки...");
+            ClientManifest manifest = ManifestBuilder.build(instance);
 
-        ProgressWindow.setStatus("Начало обновления...");
-        Updater.apply(instance, response);
+            ProgressWindow.setStatus("Подготовка обновления...");
+            UpdateResponse response = ApiClient.check(pack, manifest);
 
-        ProgressWindow.setStatus("Запуск Minecraft...");
-        Thread.sleep(500);
-        ProgressWindow.close();
+            ProgressWindow.setStatus("Начало обновления...");
+            Updater.apply(instance, response);
+
+            ProgressWindow.setStatus("Запуск Minecraft...");
+            Thread.sleep(500);
+            ProgressWindow.close();
+
+        } catch (IOException e) {
+            ProgressWindow.setStatus("Ошибка: " + e);
+            Thread.sleep(2000);
+            ProgressWindow.close();
+            throw new RuntimeException(e);
+        }
     }
 }

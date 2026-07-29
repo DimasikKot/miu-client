@@ -18,7 +18,8 @@ public final class ProgressWindow {
         SwingUtilities.invokeLater(() -> {
             frame = new JFrame("PurMur Updater");
 
-            frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+//            frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             frame.setResizable(false);
             frame.setSize(640, 200);
             frame.setLocationRelativeTo(null);

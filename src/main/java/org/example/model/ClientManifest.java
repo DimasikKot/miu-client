@@ -18,8 +18,16 @@ public class ClientManifest {
     public ClientManifest() {
     }
 
+    public ManifestFile getPack() {
+        return pack;
+    }
+
     public void setPack(ManifestFile pack) {
         this.pack = pack;
+    }
+
+    public ManifestFile getInstance() {
+        return instance;
     }
 
     public void setInstance(ManifestFile instance) {
@@ -30,8 +38,20 @@ public class ClientManifest {
         return files;
     }
 
+    public void setFiles(Map<String, ManifestFile> files) {
+        this.files = files;
+    }
+
+    public List<ServerInfo> getServers() {
+        return servers;
+    }
+
     public void setServers(List<ServerInfo> servers) {
         this.servers = servers;
+    }
+
+    public List<String> getResourcePacks() {
+        return resourcePacks;
     }
 
     public void setResourcePacks(List<String> resourcePacks) {
