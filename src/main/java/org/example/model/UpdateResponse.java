@@ -36,23 +36,11 @@ public class UpdateResponse {
         return delete;
     }
 
-    public void setDelete(List<String> delete) {
-        this.delete = delete;
-    }
-
     public List<ServerInfo> getServers() {
         return servers;
     }
 
-    public void setServers(List<ServerInfo> servers) {
-        this.servers = servers;
-    }
-
     public List<String> getResourcePacks() {
         return resourcePacks;
-    }
-
-    public void setResourcePacks(List<String> resourcePacks) {
-        this.resourcePacks = resourcePacks;
     }
 }
