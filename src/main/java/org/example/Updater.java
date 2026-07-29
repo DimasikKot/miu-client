@@ -54,11 +54,24 @@ public final class Updater {
         int current_count = 0;
         int all_count = response.getDownload().size();
 
+        long totalBytes = response.getDownload().stream().mapToLong(DownloadFile::getSize).sum();
+        long downloadedBytes = 0;
+        long start = System.nanoTime();
+
         for (DownloadFile file : response.getDownload()) {
+            Downloader.download(instance, file);
+
             current_count++;
             ProgressWindow.setFile(file.getPath());
             ProgressWindow.setProgress(current_count, all_count);
-            Downloader.download(instance, file);
+
+            downloadedBytes += file.getSize();
+
+            ProgressWindow.setDownloadedBytes(downloadedBytes, totalBytes);
+            long elapsed = System.nanoTime() - start;
+            double seconds = elapsed / 1_000_000_000.0;
+            double speed = downloadedBytes / 1024d / 1024d / seconds;
+            ProgressWindow.setSpeed(speed);
         }
     }
 

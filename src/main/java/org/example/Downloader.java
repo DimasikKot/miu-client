@@ -13,14 +13,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public final class Downloader {
-
     private static final HttpClient CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
 
     private Downloader() {
     }
 
     public static void download(Path instance, DownloadFile file) throws IOException, InterruptedException {
-
         Path destination = instance.resolve(file.getPath());
         Files.createDirectories(destination.getParent());
 
@@ -30,7 +28,6 @@ public final class Downloader {
                 System.out.println("[SKIP] " + file.getPath());
                 return;
             }
-
         }
 
         Path temp = destination.resolveSibling(destination.getFileName() + ".download");
@@ -55,5 +52,4 @@ public final class Downloader {
         Files.move(temp, destination, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         System.out.println("[OK] Downloaded: " + file.getPath());
     }
-
 }

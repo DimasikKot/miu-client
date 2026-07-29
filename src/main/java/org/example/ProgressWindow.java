@@ -6,8 +6,10 @@ import java.awt.*;
 public final class ProgressWindow {
     private static JFrame frame;
     private static JLabel statusLabel;
-    private static JLabel fileLabel;
     private static JProgressBar progressBar;
+    private static JLabel downloadedBytesLabel;
+    private static JLabel fileLabel;
+    private static JLabel speedLabel;
 
     private ProgressWindow() {
     }
@@ -18,7 +20,7 @@ public final class ProgressWindow {
 
             frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             frame.setResizable(false);
-            frame.setSize(420, 140);
+            frame.setSize(640, 200);
             frame.setLocationRelativeTo(null);
 
             JPanel panel = new JPanel();
@@ -26,7 +28,9 @@ public final class ProgressWindow {
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
             statusLabel = new JLabel("Проверка обновлений...");
+            downloadedBytesLabel = new JLabel(" ");
             fileLabel = new JLabel(" ");
+            speedLabel = new JLabel(" ");
 
             progressBar = new JProgressBar();
             progressBar.setMinimum(0);
@@ -37,7 +41,11 @@ public final class ProgressWindow {
             panel.add(Box.createVerticalStrut(10));
             panel.add(progressBar);
             panel.add(Box.createVerticalStrut(10));
+            panel.add(downloadedBytesLabel);
+            panel.add(Box.createVerticalStrut(10));
             panel.add(fileLabel);
+            panel.add(Box.createVerticalStrut(10));
+            panel.add(speedLabel);
 
             frame.setContentPane(panel);
             frame.setVisible(true);
@@ -58,6 +66,23 @@ public final class ProgressWindow {
             progressBar.setValue(current);
             progressBar.setString(current + " / " + total);
         });
+    }
+
+    public static void setDownloadedBytes(long downloaded, long total) {
+        SwingUtilities.invokeLater(() -> {
+            double d = downloaded / 1024d / 1024d;
+            double t = total / 1024d / 1024d;
+
+            downloadedBytesLabel.setText(String.format("%.1f / %.1f MB", d, t));
+        });
+    }
+
+    public static void setSpeed(double speed) {
+        SwingUtilities.invokeLater(() ->
+                speedLabel.setText(
+                        String.format("%.2f MB/s", speed)
+                )
+        );
     }
 
     public static void close() {
