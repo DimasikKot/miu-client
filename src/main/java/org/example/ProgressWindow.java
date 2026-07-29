@@ -2,6 +2,8 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public final class ProgressWindow {
     private static JFrame frame;
@@ -18,8 +20,16 @@ public final class ProgressWindow {
         SwingUtilities.invokeLater(() -> {
             frame = new JFrame("PurMur Updater");
 
-            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+//            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 //            frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    frame.dispose();
+                    System.exit(1);
+                }
+            });
+
             frame.setResizable(false);
             frame.setSize(640, 200);
             frame.setLocationRelativeTo(null);
