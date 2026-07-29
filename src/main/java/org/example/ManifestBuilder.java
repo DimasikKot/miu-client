@@ -2,35 +2,23 @@ package org.example;
 
 import org.example.model.ClientManifest;
 import org.example.model.ManifestFile;
-import org.example.model.MinecraftInfo;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public final class ManifestBuilder {
-
     private ManifestBuilder() {
     }
-
 
     public static ClientManifest build(Path instance) throws IOException {
 
         ClientManifest manifest = new ClientManifest();
 
-
-        MinecraftInfo minecraft = new MinecraftInfo();
-
-        minecraft.setVersion("unknown");
-        minecraft.setLoader("unknown");
-        minecraft.setLoaderVersion("unknown");
-
-        manifest.setMinecraft(minecraft);
-
         scanFolder(instance.resolve("mods"), instance, manifest);
         scanFolder(instance.resolve("resourcepacks"), instance, manifest);
         // Xaero позже
-        // servers.dat позже
+        // servers.dat позже TODO
         return manifest;
     }
 

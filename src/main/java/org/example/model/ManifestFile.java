@@ -1,7 +1,6 @@
 package org.example.model;
 
 public class ManifestFile {
-
     private String name;
     private String path;
     private String sha256;
@@ -11,7 +10,6 @@ public class ManifestFile {
     }
 
     public ManifestFile(String name, String path, String sha256, long size) {
-
         this.name = name;
         this.path = path;
         this.sha256 = sha256;
@@ -49,5 +47,4 @@ public class ManifestFile {
     public void setSize(long size) {
         this.size = size;
     }
-
 }

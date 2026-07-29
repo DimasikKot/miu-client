@@ -1,19 +1,17 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class UpdateResponse {
-
     private int version;
-
-    private MinecraftInfo minecraft;
-
     private List<DownloadFile> download = new ArrayList<>();
-
     private List<String> delete = new ArrayList<>();
-
     private List<ServerInfo> servers = new ArrayList<>();
+    @JsonProperty("resource_packs")
+    private List<String> resourcePacks = new ArrayList<>();
 
     public UpdateResponse() {
     }
@@ -24,14 +22,6 @@ public class UpdateResponse {
 
     public void setVersion(int version) {
         this.version = version;
-    }
-
-    public MinecraftInfo getMinecraft() {
-        return minecraft;
-    }
-
-    public void setMinecraft(MinecraftInfo minecraft) {
-        this.minecraft = minecraft;
     }
 
     public List<DownloadFile> getDownload() {
@@ -58,4 +48,11 @@ public class UpdateResponse {
         this.servers = servers;
     }
 
+    public List<String> getResourcePacks() {
+        return resourcePacks;
+    }
+
+    public void setResourcePacks(List<String> resourcePacks) {
+        this.resourcePacks = resourcePacks;
+    }
 }

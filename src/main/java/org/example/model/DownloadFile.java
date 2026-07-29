@@ -1,7 +1,6 @@
 package org.example.model;
 
 public class DownloadFile {
-
     private String path;
     private String sha256;
     private long size;
@@ -41,5 +40,4 @@ public class DownloadFile {
     public void setUrl(String url) {
         this.url = url;
     }
-
 }

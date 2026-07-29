@@ -1,27 +1,37 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ClientManifest {
-
-    private MinecraftInfo minecraft;
-
+    private ManifestFile pack;
+    private ManifestFile instance;
     private Map<String, ManifestFile> files = new HashMap<>();
-
     private List<ServerInfo> servers = new ArrayList<>();
+    @JsonProperty("resource_packs")
+    private List<String> resourcePacks = new ArrayList<>();
 
     public ClientManifest() {
     }
 
-    public MinecraftInfo getMinecraft() {
-        return minecraft;
+    public ManifestFile getPack() {
+        return pack;
     }
 
-    public void setMinecraft(MinecraftInfo minecraft) {
-        this.minecraft = minecraft;
+    public void setPack(ManifestFile pack) {
+        this.pack = pack;
+    }
+
+    public ManifestFile getInstance() {
+        return instance;
+    }
+
+    public void setInstance(ManifestFile instance) {
+        this.instance = instance;
     }
 
     public Map<String, ManifestFile> getFiles() {
@@ -40,4 +50,11 @@ public class ClientManifest {
         this.servers = servers;
     }
 
+    public List<String> getResourcePacks() {
+        return resourcePacks;
+    }
+
+    public void setResourcePacks(List<String> resourcePacks) {
+        this.resourcePacks = resourcePacks;
+    }
 }

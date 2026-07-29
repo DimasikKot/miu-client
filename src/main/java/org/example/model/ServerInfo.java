@@ -1,7 +1,6 @@
 package org.example.model;
 
 public class ServerInfo {
-
     private String name;
     private String ip;
 
@@ -28,5 +27,4 @@ public class ServerInfo {
     public void setIp(String ip) {
         this.ip = ip;
     }
-
 }
