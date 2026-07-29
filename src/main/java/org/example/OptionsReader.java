@@ -10,8 +10,8 @@ public final class OptionsReader {
     private OptionsReader() {
     }
 
-    public static List<String> read(Path minecraftDir) throws IOException {
-        Path options = minecraftDir.resolve("options.txt");
+    public static List<String> read(Path instance) throws IOException {
+        Path options = instance.resolve("minecraft/options.txt");
         if (!Files.exists(options)) {
             return new ArrayList<>();
         }
@@ -22,6 +22,7 @@ public final class OptionsReader {
             }
             return parse(line.substring("resourcePacks:".length()));
         }
+
         return new ArrayList<>();
     }
 

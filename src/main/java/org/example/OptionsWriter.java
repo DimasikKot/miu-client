@@ -10,8 +10,8 @@ public final class OptionsWriter {
     private OptionsWriter() {
     }
 
-    public static void write(Path minecraftDir, List<String> resourcePacks) throws IOException {
-        Path options = minecraftDir.resolve("options.txt");
+    public static void write(Path instance, List<String> resourcePacks) throws IOException {
+        Path options = instance.resolve("minecraft/options.txt");
         List<String> lines = new ArrayList<>();
         if (Files.exists(options)) {
             lines.addAll(Files.readAllLines(options));

@@ -20,6 +20,8 @@ public final class Updater {
 
         downloadFiles(instance, response);
 
+        OptionsWriter.write(instance, response.getResourcePacks());
+
         System.out.println();
         System.out.println("Update completed successfully.");
         System.out.println();

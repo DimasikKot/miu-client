@@ -29,6 +29,10 @@ public final class ManifestBuilder {
         scanFolder(instance.resolve("minecraft/resourcepacks"), instance, manifest);
         scanFolder(instance.resolve("minecraft/xaero"), instance, manifest);
 
+        manifest.setResourcePacks(
+                OptionsReader.read(instance)
+        );
+
         // servers.dat позже TODO
         return manifest;
     }
