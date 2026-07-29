@@ -31,5 +31,9 @@ public class Main {
 
         ProgressWindow.setStatus("Начало обновления...");
         Updater.apply(instance, response);
+
+        ProgressWindow.setStatus("Запуск Minecraft...");
+        Thread.sleep(500);
+        ProgressWindow.close();
     }
 }

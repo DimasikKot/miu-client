@@ -23,7 +23,6 @@ public final class Updater {
         System.out.println();
         System.out.println("Update completed successfully.");
         System.out.println();
-
     }
 
     private static void deleteFiles(Path instance, UpdateResponse response) throws IOException {
@@ -51,9 +50,6 @@ public final class Updater {
 
         System.out.println("Downloading files...");
         ProgressWindow.setStatus("Загрузка файлов...");
-        for (DownloadFile file : response.getDownload()) {
-            Downloader.download(instance, file);
-        }
 
         int current_count = 0;
         int all_count = response.getDownload().size();
@@ -64,10 +60,6 @@ public final class Updater {
             ProgressWindow.setProgress(current_count, all_count);
             Downloader.download(instance, file);
         }
-
-        ProgressWindow.setStatus("Запуск Minecraft...");
-        Thread.sleep(500);
-        ProgressWindow.close();
     }
 
     private static void cleanupEmptyParents(Path root, Path current) throws IOException {

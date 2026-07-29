@@ -14,7 +14,6 @@ public final class ProgressWindow {
 
     public static void show() {
         SwingUtilities.invokeLater(() -> {
-
             frame = new JFrame("PurMur Updater");
 
             frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
