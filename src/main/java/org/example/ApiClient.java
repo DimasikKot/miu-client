@@ -13,22 +13,16 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 public final class ApiClient {
-
     private static final String SERVER = "http://fundata.mooo.com:10033";
-
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
     private ApiClient() {
     }
 
     public static UpdateResponse check(String pack, ClientManifest manifest) throws IOException, InterruptedException {
-
         String json = MAPPER.writeValueAsString(manifest);
-
         System.out.println(json);
-
         String encodedPack =
                 URLEncoder.encode(
                                 pack,
@@ -49,7 +43,5 @@ public final class ApiClient {
         }
 
         return MAPPER.readValue(response.body(), UpdateResponse.class);
-
     }
-
 }

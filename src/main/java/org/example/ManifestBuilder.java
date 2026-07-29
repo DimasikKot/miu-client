@@ -12,25 +12,22 @@ public final class ManifestBuilder {
     }
 
     public static ClientManifest build(Path instance) throws IOException {
-
         ClientManifest manifest = new ClientManifest();
 
-        scanFolder(instance.resolve("mods"), instance, manifest);
-        scanFolder(instance.resolve("resourcepacks"), instance, manifest);
-        // Xaero позже
+        scanFolder(instance.resolve("minecraft/config"), instance, manifest);
+        scanFolder(instance.resolve("minecraft/mods"), instance, manifest);
+        scanFolder(instance.resolve("minecraft/resourcepacks"), instance, manifest);
+        scanFolder(instance.resolve("minecraft/xaero"), instance, manifest);
+
         // servers.dat позже TODO
         return manifest;
     }
 
     private static void scanFolder(Path folder, Path root, ClientManifest manifest) throws IOException {
         if (!Files.exists(folder)) return;
-
         try (var stream = Files.walk(folder)) {
-
             stream.filter(Files::isRegularFile).forEach(file -> {
-
                 try {
-
                     String relative = root.relativize(file).toString().replace("\\", "/");
                     ManifestFile manifestFile = new ManifestFile();
                     manifestFile.setName(file.getFileName().toString());
