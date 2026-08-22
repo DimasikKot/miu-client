@@ -7,6 +7,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.time.Duration;
 
 import org.example.model.ClientManifest;
 import org.example.model.UpdateResponse;
@@ -14,26 +16,44 @@ import org.example.model.UpdateResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class ApiClient {
-  private static final String SERVER = "http://fundata.mooo.com:10033";
   private static final ObjectMapper MAPPER = new ObjectMapper();
-  private static final HttpClient CLIENT = HttpClient.newHttpClient();
+
+  private static final HttpClient CLIENT = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
 
   private ApiClient() {
   }
 
-  public static UpdateResponse check(String pack, ClientManifest manifest) throws IOException, InterruptedException {
+  public static UpdateResponse check(String pack, ClientManifest manifest, Path instance) throws IOException, InterruptedException {
+
     String json = MAPPER.writeValueAsString(manifest);
 
     String encodedPack = URLEncoder.encode(pack, StandardCharsets.UTF_8).replace("+", "%20");
-    HttpRequest request = HttpRequest.newBuilder().uri(URI.create(SERVER + "/update/" + encodedPack))
-        .header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(json)).build();
 
-    HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+    IOException lastException = null;
 
-    if (response.statusCode() != 200) {
-      throw new IOException("Server returned " + response.statusCode());
+    for (String server : Config.getServers(instance)) {
+      try {
+        System.out.println("[MIU] Trying server: " + server);
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(server + "/update/" + encodedPack)).timeout(Duration.ofSeconds(10)).header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(json)).build();
+
+        HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200) {
+          System.out.println("[MIU] Connected to: " + server);
+
+          return MAPPER.readValue(response.body(), UpdateResponse.class);
+        }
+
+        System.out.println("[MIU] Server returned " + response.statusCode());
+
+      } catch (IOException e) {
+        lastException = e;
+
+        System.out.println("[MIU] Server unavailable: " + server);
+      }
     }
 
-    return MAPPER.readValue(response.body(), UpdateResponse.class);
+    throw new IOException("All MIU servers are unavailable", lastException);
   }
 }

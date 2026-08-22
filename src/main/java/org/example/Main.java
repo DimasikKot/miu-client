@@ -29,7 +29,7 @@ public class Main {
       ClientManifest manifest = ManifestBuilder.build(instance);
 
       ProgressWindow.setStatus("Подготовка обновления...");
-      UpdateResponse response = ApiClient.check(pack, manifest);
+      UpdateResponse response = ApiClient.check(pack, manifest, instance);
 
       ProgressWindow.setStatus("Начало обновления...");
       Updater.apply(instance, response);
