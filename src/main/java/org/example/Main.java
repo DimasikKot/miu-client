@@ -16,8 +16,8 @@ public class Main {
       System.exit(1);
     }
 
+    String pack = Paths.get(args[1]).toString();
     Path instance = Paths.get(args[0]).toAbsolutePath();
-    String pack = instance.getFileName().toString();
 
     System.out.println("Pack      : " + pack);
     System.out.println("Instance  : " + instance);

@@ -23,19 +23,12 @@ public final class ApiClient {
 
   public static UpdateResponse check(String pack, ClientManifest manifest) throws IOException, InterruptedException {
     String json = MAPPER.writeValueAsString(manifest);
-    System.out.println(json);
-    String encodedPack = URLEncoder.encode(
-        pack,
-        StandardCharsets.UTF_8)
-        .replace("+", "%20");
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(SERVER + "/update/" + encodedPack))
-        .header("Content-Type", "application/json")
-        .POST(HttpRequest.BodyPublishers.ofString(json))
-        .build();
+
+    String encodedPack = URLEncoder.encode(pack, StandardCharsets.UTF_8).replace("+", "%20");
+    HttpRequest request = HttpRequest.newBuilder().uri(URI.create(SERVER + "/update/" + encodedPack))
+        .header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(json)).build();
 
     HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-    System.out.println(response.body());
 
     if (response.statusCode() != 200) {
       throw new IOException("Server returned " + response.statusCode());
