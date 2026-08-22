@@ -1,106 +1,110 @@
 package org.example;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
+
 public final class ProgressWindow {
-    private static JFrame frame;
-    private static JLabel statusLabel;
-    private static JProgressBar progressBar;
-    private static JLabel downloadedBytesLabel;
-    private static JLabel fileLabel;
-    private static JLabel speedLabel;
+  private static JFrame frame;
+  private static JLabel statusLabel;
+  private static JProgressBar progressBar;
+  private static JLabel downloadedBytesLabel;
+  private static JLabel fileLabel;
+  private static JLabel speedLabel;
 
-    private ProgressWindow() {
-    }
+  private ProgressWindow() {
+  }
 
-    public static void show() {
-        SwingUtilities.invokeLater(() -> {
-            frame = new JFrame("PurMur Updater");
+  public static void show() {
+    SwingUtilities.invokeLater(() -> {
+      frame = new JFrame("PurMur Updater");
 
-//            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//            frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-            frame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    frame.dispose();
-                    System.exit(1);
-                }
-            });
+      // frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+      // frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+      frame.addWindowListener(new WindowAdapter() {
+        @Override
+        public void windowClosing(WindowEvent e) {
+          frame.dispose();
+          System.exit(1);
+        }
+      });
 
-            frame.setResizable(false);
-            frame.setSize(640, 200);
-            frame.setLocationRelativeTo(null);
+      frame.setResizable(false);
+      frame.setSize(640, 200);
+      frame.setLocationRelativeTo(null);
 
-            JPanel panel = new JPanel();
-            panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+      JPanel panel = new JPanel();
+      panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+      panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-            statusLabel = new JLabel("Проверка обновлений...");
-            downloadedBytesLabel = new JLabel(" ");
-            fileLabel = new JLabel(" ");
-            speedLabel = new JLabel(" ");
+      statusLabel = new JLabel("Проверка обновлений...");
+      downloadedBytesLabel = new JLabel(" ");
+      fileLabel = new JLabel(" ");
+      speedLabel = new JLabel(" ");
 
-            progressBar = new JProgressBar();
-            progressBar.setMinimum(0);
-            progressBar.setMaximum(100);
-            progressBar.setStringPainted(true);
+      progressBar = new JProgressBar();
+      progressBar.setMinimum(0);
+      progressBar.setMaximum(100);
+      progressBar.setStringPainted(true);
 
-            panel.add(statusLabel);
-            panel.add(Box.createVerticalStrut(10));
-            panel.add(progressBar);
-            panel.add(Box.createVerticalStrut(10));
-            panel.add(downloadedBytesLabel);
-            panel.add(Box.createVerticalStrut(10));
-            panel.add(fileLabel);
-            panel.add(Box.createVerticalStrut(10));
-            panel.add(speedLabel);
+      panel.add(statusLabel);
+      panel.add(Box.createVerticalStrut(10));
+      panel.add(progressBar);
+      panel.add(Box.createVerticalStrut(10));
+      panel.add(downloadedBytesLabel);
+      panel.add(Box.createVerticalStrut(10));
+      panel.add(fileLabel);
+      panel.add(Box.createVerticalStrut(10));
+      panel.add(speedLabel);
 
-            frame.setContentPane(panel);
-            frame.setVisible(true);
-        });
-    }
+      frame.setContentPane(panel);
+      frame.setVisible(true);
+    });
+  }
 
-    public static void setStatus(String status) {
-        SwingUtilities.invokeLater(() -> statusLabel.setText(status));
-    }
+  public static void setStatus(String status) {
+    SwingUtilities.invokeLater(() -> statusLabel.setText(status));
+  }
 
-    public static void setFile(String file) {
-        SwingUtilities.invokeLater(() -> fileLabel.setText(file));
-    }
+  public static void setFile(String file) {
+    SwingUtilities.invokeLater(() -> fileLabel.setText(file));
+  }
 
-    public static void setProgress(int current, int total) {
-        SwingUtilities.invokeLater(() -> {
-            progressBar.setMaximum(total);
-            progressBar.setValue(current);
-            progressBar.setString(current + " / " + total);
-        });
-    }
+  public static void setProgress(int current, int total) {
+    SwingUtilities.invokeLater(() -> {
+      progressBar.setMaximum(total);
+      progressBar.setValue(current);
+      progressBar.setString(current + " / " + total);
+    });
+  }
 
-    public static void setDownloadedBytes(long downloaded, long total) {
-        SwingUtilities.invokeLater(() -> {
-            double d = downloaded / 1024d / 1024d;
-            double t = total / 1024d / 1024d;
+  public static void setDownloadedBytes(long downloaded, long total) {
+    SwingUtilities.invokeLater(() -> {
+      double d = downloaded / 1024d / 1024d;
+      double t = total / 1024d / 1024d;
 
-            downloadedBytesLabel.setText(String.format("%.1f / %.1f MB", d, t));
-        });
-    }
+      downloadedBytesLabel.setText(String.format("%.1f / %.1f MB", d, t));
+    });
+  }
 
-    public static void setSpeed(double speed) {
-        SwingUtilities.invokeLater(() ->
-                speedLabel.setText(
-                        String.format("%.2f MB/s", speed)
-                )
-        );
-    }
+  public static void setSpeed(double speed) {
+    SwingUtilities.invokeLater(() -> speedLabel.setText(
+        String.format("%.2f MB/s", speed)));
+  }
 
-    public static void close() {
-        SwingUtilities.invokeLater(() -> {
-            if (frame != null) {
-                frame.dispose();
-            }
-        });
-    }
+  public static void close() {
+    SwingUtilities.invokeLater(() -> {
+      if (frame != null) {
+        frame.dispose();
+      }
+    });
+  }
 }
