@@ -18,6 +18,7 @@ public final class OptionsWriter {
     }
 
     String newLine = "resourcePacks:" + serialize(resourcePacks);
+    System.out.println("[OK] " + newLine);
     boolean found = false;
 
     for (int i = 0; i < lines.size(); i++) {
