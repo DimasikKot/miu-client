@@ -5,8 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import org.example.logic.OptionsReader;
+import org.example.logic.ServersDat;
 import org.example.model.FileInfo;
+import org.example.model.ServerInfo;
 import org.example.model.UpdatePostRequest;
 
 public final class UpdatePostRequestBuilder {
@@ -31,7 +35,18 @@ public final class UpdatePostRequestBuilder {
     request.setResourcepacks(OptionsReader.readResourcepacks(instance));
     request.setIncompatibleResourcepacks(OptionsReader.readIncompatibleResourcepacks(instance));
 
-    // TODO servers.dat сканировать тоже
+    List<ServerInfo> servers = ServersDat.read(instance.resolve("minecraft/servers.dat"));
+    request.setServers(servers);
+    System.out.println("[OK] old_servers:");
+
+    for (ServerInfo server : servers) {
+      System.out.printf(
+          "  - %s (%s)%n",
+          server.getName(),
+          server.getIp()
+      );
+    }
+
     return request;
   }
 
