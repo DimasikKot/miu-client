@@ -26,7 +26,7 @@ public class Main {
 
     try {
       ProgressWindow.setStatus("Сканирование сборки...");
-      UpdatePostRequest manifest = UpdatePostRequestBuilder.build(instance);
+      UpdatePostRequest manifest = UpdatePostRequestBuilder.build(pack, instance);
 
       ProgressWindow.setStatus("Подготовка обновления...");
       UpdatePostResponse response = ApiClient.check(pack, manifest, instance);

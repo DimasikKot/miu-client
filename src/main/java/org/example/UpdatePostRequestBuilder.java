@@ -11,26 +11,45 @@ import org.example.logic.OptionsReader;
 import org.example.logic.ServersDat;
 import org.example.model.FileInfo;
 import org.example.model.ServerInfo;
+import org.example.model.UpdateGetResponse;
 import org.example.model.UpdatePostRequest;
 
 public final class UpdatePostRequestBuilder {
   private UpdatePostRequestBuilder() {
   }
 
-  public static UpdatePostRequest build(Path instance) throws IOException {
+  public static UpdatePostRequest build(String pack, Path instance) throws IOException, InterruptedException {
     UpdatePostRequest request = new UpdatePostRequest();
-
-    // TODO сделать получение сканирования с сервера
 
     request.setResourcepacks(new ArrayList<>());
     request.setIncompatibleResourcepacks(new ArrayList<>());
     request.setServers(new ArrayList<>());
     request.setFiles(new HashMap<>());
 
-    scanFolder(instance.resolve("minecraft/config"), instance, request);
-    scanFolder(instance.resolve("minecraft/mods"), instance, request);
-    scanFolder(instance.resolve("minecraft/resourcepacks"), instance, request);
-    scanFolder(instance.resolve("minecraft/xaero"), instance, request);
+    // Получаем с сервера список того, что необходимо сканировать
+    UpdateGetResponse scanPaths = ApiClient.getScanPaths(pack, instance);
+
+    System.out.println("[MIU] Scan configuration:");
+
+    System.out.println("  files:");
+    for (String file : scanPaths.getFiles_paths()) {
+      System.out.println("    - " + file);
+    }
+
+    System.out.println("  dirs:");
+    for (String dir : scanPaths.getDirs_paths()) {
+      System.out.println("    - " + dir);
+    }
+
+    // Сканируем отдельные файлы
+    for (String file : scanPaths.getFiles_paths()) {
+      scanFile(instance.resolve(file), instance, request);
+    }
+
+    // Сканируем директории рекурсивно
+    for (String dir : scanPaths.getDirs_paths()) {
+      scanFolder(instance.resolve(dir), instance, request);
+    }
 
     request.setResourcepacks(OptionsReader.readResourcepacks(instance));
     request.setIncompatibleResourcepacks(OptionsReader.readIncompatibleResourcepacks(instance));
@@ -40,38 +59,58 @@ public final class UpdatePostRequestBuilder {
     System.out.println("[OK] old_servers:");
 
     for (ServerInfo server : servers) {
-      System.out.printf(
-          "  - %s (%s)%n",
-          server.getName(),
-          server.getIp()
-      );
+      System.out.printf("  - %s (%s)%n", server.getName(), server.getIp());
     }
 
     return request;
   }
 
-  private static FileInfo scanFile(Path file) {
-    try {
-      FileInfo fileInfo = new FileInfo();
-      fileInfo.setName(file.getFileName().toString());
-      fileInfo.setSha256(HashUtil.sha256(file));
-      fileInfo.setSize((int) Files.size(file));
-      return fileInfo;
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+  private static void scanFile(Path file, Path root, UpdatePostRequest manifest) throws IOException {
+    if (!Files.exists(file)) {
+      System.out.println("[MIU] File not found: " + root.relativize(file));
+      return;
     }
+
+    if (!Files.isRegularFile(file)) {
+      System.out.println("[MIU] Not a regular file: " + root.relativize(file));
+      return;
+    }
+
+    FileInfo fileInfo = createFileInfo(file);
+    String relative = root.relativize(file).toString().replace("\\", "/");
+    manifest.getFiles().put(relative, fileInfo);
   }
 
   private static void scanFolder(Path folder, Path root, UpdatePostRequest manifest) throws IOException {
-    if (!Files.exists(folder))
+    if (!Files.exists(folder)) {
+      System.out.println("[MIU] Directory not found: " + root.relativize(folder));
       return;
+    }
+
+    if (!Files.isDirectory(folder)) {
+      System.out.println("[MIU] Not a directory: " + root.relativize(folder));
+      return;
+    }
 
     try (var stream = Files.walk(folder)) {
       stream.filter(Files::isRegularFile).forEach(file -> {
-        String relative = root.relativize(file).toString();
-        FileInfo fileInfo = scanFile(file);
-        manifest.getFiles().put(relative.replace("\\", "/"), fileInfo);
+        try {
+          FileInfo fileInfo = createFileInfo(file);
+          String relative = root.relativize(file).toString().replace("\\", "/");
+          manifest.getFiles().put(relative, fileInfo);
+        } catch (IOException e) {
+          throw new RuntimeException("Failed to scan file: " + file, e);
+        }
       });
     }
+  }
+
+  private static FileInfo createFileInfo(Path file) throws IOException {
+    FileInfo fileInfo = new FileInfo();
+    fileInfo.setName(file.getFileName().toString());
+    fileInfo.setSha256(HashUtil.sha256(file));
+    fileInfo.setSize((int) Files.size(file));
+
+    return fileInfo;
   }
 }
