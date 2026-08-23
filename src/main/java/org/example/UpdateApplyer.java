@@ -14,6 +14,19 @@ public final class UpdateApplyer {
   private UpdateApplyer() {
   }
 
+  private static void cleanupEmptyParents(Path root, Path current) throws IOException {
+    while (current != null && !current.equals(root)) {
+      try (var stream = Files.list(current)) {
+        if (stream.findAny().isPresent()) {
+          return;
+        }
+      }
+
+      Files.delete(current);
+      current = current.getParent();
+    }
+  }
+
   public static void apply(Path instance, UpdatePostResponse response) throws Exception {
     System.out.println();
     System.out.println("=== Applying update ===");
@@ -22,18 +35,16 @@ public final class UpdateApplyer {
     deleteFiles(instance, response);
     downloadFiles(instance, response);
 
+    // TODO Особая обработка mmc-pack.json
+
     OptionsWriter.writeResourcepacks(instance, response.getNew_resourcepacks());
     OptionsWriter.writeIncompatibleResourcepacks(instance, response.getNew_incompatible_resourcepacks());
 
     ServersDat.replaceServers(instance.resolve("minecraft/servers.dat"), response.getNew_servers());
-    System.out.println("[OK] new_servers:");
 
+    System.out.println("[OK] new_servers:");
     for (ServerInfo server : response.getNew_servers()) {
-      System.out.printf(
-          "  - %s (%s)%n",
-          server.getName(),
-          server.getIp()
-      );
+      System.out.printf("  - %s (%s)%n", server.getName(), server.getIp());
     }
 
     System.out.println();
@@ -49,11 +60,15 @@ public final class UpdateApplyer {
 
     System.out.println("Deleting files...");
     ProgressWindow.setStatus("Удаление старых файлов...");
+
     for (String relative : response.getNeed_delete()) {
       Path file = instance.resolve(relative);
+
       if (!Files.exists(file)) continue;
+
       Files.delete(file);
       cleanupEmptyParents(instance, file.getParent());
+
       System.out.println("[OK] Deleted: " + relative);
     }
   }
@@ -89,22 +104,12 @@ public final class UpdateApplyer {
       downloadedBytes += fileInfo.getSize();
 
       ProgressWindow.setDownloadedBytes(downloadedBytes, totalBytes);
+
       long elapsed = System.nanoTime() - start;
       double seconds = elapsed / 1_000_000_000.0;
       double speed = downloadedBytes / 1024d / 1024d / seconds;
+
       ProgressWindow.setSpeed(speed);
-    }
-  }
-
-  private static void cleanupEmptyParents(Path root, Path current) throws IOException {
-    while (current != null && !current.equals(root)) {
-      try (var stream = Files.list(current)) {
-        if (stream.findAny().isPresent()) return;
-      }
-
-      Files.delete(current);
-
-      current = current.getParent();
     }
   }
 }
