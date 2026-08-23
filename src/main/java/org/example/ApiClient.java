@@ -10,8 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 
-import org.example.model.ClientManifest;
-import org.example.model.UpdateResponse;
+import org.example.model.UpdatePostRequest;
+import org.example.model.UpdatePostResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,7 +23,7 @@ public final class ApiClient {
   private ApiClient() {
   }
 
-  public static UpdateResponse check(String pack, ClientManifest manifest, Path instance) throws IOException, InterruptedException {
+  public static UpdatePostResponse check(String pack, UpdatePostRequest manifest, Path instance) throws IOException, InterruptedException {
 
     String json = MAPPER.writeValueAsString(manifest);
 
@@ -42,7 +42,7 @@ public final class ApiClient {
         if (response.statusCode() == 200) {
           System.out.println("[MIU] Connected to: " + server);
 
-          return MAPPER.readValue(response.body(), UpdateResponse.class);
+          return MAPPER.readValue(response.body(), UpdatePostResponse.class);
         }
 
         System.out.println("[MIU] Server returned " + response.statusCode());

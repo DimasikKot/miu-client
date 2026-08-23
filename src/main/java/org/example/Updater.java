@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.example.model.DownloadFile;
-import org.example.model.UpdateResponse;
+import org.example.model.FileDownloadInfo;
+import org.example.model.UpdatePostResponse;
 
 public final class Updater {
   private Updater() {
   }
 
-  public static void apply(Path instance, UpdateResponse response) throws Exception {
+  public static void apply(Path instance, UpdatePostResponse response) throws Exception {
     System.out.println();
     System.out.println("=== Applying update ===");
     System.out.println();
@@ -20,22 +20,22 @@ public final class Updater {
 
     downloadFiles(instance, response);
 
-    OptionsWriter.write(instance, response.getResourcePacks());
+    OptionsWriter.write(instance, response.getNew_resourcepacks());
 
     System.out.println();
     System.out.println("Update completed successfully.");
     System.out.println();
   }
 
-  private static void deleteFiles(Path instance, UpdateResponse response) throws IOException {
-    if (response.getDelete().isEmpty()) {
+  private static void deleteFiles(Path instance, UpdatePostResponse response) throws IOException {
+    if (response.getNeed_delete().isEmpty()) {
       System.out.println("Nothing to delete.");
       return;
     }
 
     System.out.println("Deleting files...");
     ProgressWindow.setStatus("Удаление старых файлов...");
-    for (String relative : response.getDelete()) {
+    for (String relative : response.getNeed_delete()) {
       Path file = instance.resolve(relative);
       if (!Files.exists(file))
         continue;
@@ -45,8 +45,8 @@ public final class Updater {
     }
   }
 
-  private static void downloadFiles(Path instance, UpdateResponse response) throws Exception {
-    if (response.getDownload().isEmpty()) {
+  private static void downloadFiles(Path instance, UpdatePostResponse response) throws Exception {
+    if (response.getNeed_download().isEmpty()) {
       System.out.println("Nothing to download.");
       return;
     }
@@ -55,13 +55,13 @@ public final class Updater {
     ProgressWindow.setStatus("Загрузка файлов...");
 
     int current_count = 0;
-    int all_count = response.getDownload().size();
+    int all_count = response.getNeed_download().size();
 
-    long totalBytes = response.getDownload().stream().mapToLong(DownloadFile::getSize).sum();
+    long totalBytes = response.getNeed_download().stream().mapToLong(FileDownloadInfo::getSize).sum();
     long downloadedBytes = 0;
     long start = System.nanoTime();
 
-    for (DownloadFile file : response.getDownload()) {
+    for (FileDownloadInfo file : response.getNeed_download()) {
       Downloader.download(instance, file);
 
       current_count++;

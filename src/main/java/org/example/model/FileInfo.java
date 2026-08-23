@@ -1,17 +1,15 @@
 package org.example.model;
 
-public class ManifestFile {
+public class FileInfo {
   private String name;
-  private String path;
   private String sha256;
-  private long size;
+  private int size;
 
-  public ManifestFile() {
+  public FileInfo() {
   }
 
-  public ManifestFile(String name, String path, String sha256, long size) {
+  public FileInfo(String name, String sha256, int size) {
     this.name = name;
-    this.path = path;
     this.sha256 = sha256;
     this.size = size;
   }
@@ -24,14 +22,6 @@ public class ManifestFile {
     this.name = name;
   }
 
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
-  }
-
   public String getSha256() {
     return sha256;
   }
@@ -40,11 +30,11 @@ public class ManifestFile {
     this.sha256 = sha256;
   }
 
-  public long getSize() {
+  public int getSize() {
     return size;
   }
 
-  public void setSize(long size) {
+  public void setSize(int size) {
     this.size = size;
   }
 }

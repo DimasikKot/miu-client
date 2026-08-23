@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.example.model.ClientManifest;
-import org.example.model.UpdateResponse;
+import org.example.model.UpdatePostRequest;
+import org.example.model.UpdatePostResponse;
 
 public class Main {
   public static void main(String[] args) throws Exception {
@@ -26,10 +26,10 @@ public class Main {
 
     try {
       ProgressWindow.setStatus("Сканирование сборки...");
-      ClientManifest manifest = ManifestBuilder.build(instance);
+      UpdatePostRequest manifest = ManifestBuilder.build(instance);
 
       ProgressWindow.setStatus("Подготовка обновления...");
-      UpdateResponse response = ApiClient.check(pack, manifest, instance);
+      UpdatePostResponse response = ApiClient.check(pack, manifest, instance);
 
       ProgressWindow.setStatus("Начало обновления...");
       Updater.apply(instance, response);

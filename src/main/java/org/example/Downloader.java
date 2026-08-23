@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import org.example.model.DownloadFile;
+import org.example.model.FileDownloadInfo;
 
 public final class Downloader {
   private static final HttpClient CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
@@ -18,7 +18,7 @@ public final class Downloader {
   private Downloader() {
   }
 
-  public static void download(Path instance, DownloadFile file) throws IOException, InterruptedException {
+  public static void download(Path instance, FileDownloadInfo file) throws IOException, InterruptedException {
     Path destination = instance.resolve(file.getPath());
     Files.createDirectories(destination.getParent());
 

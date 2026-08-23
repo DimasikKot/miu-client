@@ -4,59 +4,48 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.example.model.ClientManifest;
-import org.example.model.ManifestFile;
+import org.example.model.UpdatePostRequest;
+import org.example.model.FileInfo;
 
 public final class ManifestBuilder {
   private ManifestBuilder() {
   }
 
-  public static ClientManifest build(Path instance) throws IOException {
-    ClientManifest manifest = new ClientManifest();
+  public static UpdatePostRequest build(Path instance) throws IOException {
+    UpdatePostRequest request = new UpdatePostRequest();
 
-    Path pack = instance.resolve("mmc-pack.json");
-    if (Files.exists(pack)) {
-      manifest.setPack(scanFile(pack, "mmc-pack.json"));
-    }
+    scanFolder(instance.resolve("minecraft/config"), instance, request);
+    scanFolder(instance.resolve("minecraft/mods"), instance, request);
+    scanFolder(instance.resolve("minecraft/resourcepacks"), instance, request);
+    scanFolder(instance.resolve("minecraft/xaero"), instance, request);
 
-    Path instanceCfg = instance.resolve("instance.cfg");
-    if (Files.exists(instanceCfg)) {
-      manifest.setInstance(scanFile(instanceCfg, "instance.cfg"));
-    }
-
-    scanFolder(instance.resolve("minecraft/config"), instance, manifest);
-    scanFolder(instance.resolve("minecraft/mods"), instance, manifest);
-    scanFolder(instance.resolve("minecraft/resourcepacks"), instance, manifest);
-    scanFolder(instance.resolve("minecraft/xaero"), instance, manifest);
-
-    manifest.setResourcePacks(
+    request.setResourcepacks(
         OptionsReader.read(instance));
 
     // servers.dat позже TODO
-    return manifest;
+    return request;
   }
 
-  private static ManifestFile scanFile(Path file, String relative) {
+  private static FileInfo scanFile(Path file, String relative) {
     try {
-      ManifestFile manifestFile = new ManifestFile();
-      manifestFile.setName(file.getFileName().toString());
-      manifestFile.setPath(relative.replace("\\", "/"));
-      manifestFile.setSha256(HashUtil.sha256(file));
-      manifestFile.setSize(Files.size(file));
-      return manifestFile;
+      FileInfo fileInfo = new FileInfo();
+      fileInfo.setName(file.getFileName().toString());
+      fileInfo.setSha256(HashUtil.sha256(file));
+      fileInfo.setSize((int) Files.size(file));
+      return fileInfo;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private static void scanFolder(Path folder, Path root, ClientManifest manifest) throws IOException {
+  private static void scanFolder(Path folder, Path root, UpdatePostRequest manifest) throws IOException {
     if (!Files.exists(folder))
       return;
     try (var stream = Files.walk(folder)) {
       stream.filter(Files::isRegularFile).forEach(file -> {
         String relative = root.relativize(file).toString();
-        ManifestFile manifestFile = scanFile(file, relative);
-        manifest.getFiles().put(relative.replace("\\", "/"), manifestFile);
+        FileInfo fileInfo = scanFile(file, relative);
+        manifest.getFiles().put(relative.replace("\\", "/"), fileInfo);
       });
     }
   }
