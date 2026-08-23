@@ -1,21 +1,21 @@
 package org.example;
 
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public final class Config {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
-  private static final List<String> DEFAULT_SERVERS = List.of("http://localhost:10033", "http://fundata.mooo.com:10033", "http://85.15.190.8:10033");
+  private static final List<String> DEFAULT_SERVERS = List.of("http://localhost:10033", "http://fundata.mooo.com:10033",
+      "http://85.15.190.8:10033");
 
   private Config() {
   }
@@ -50,10 +50,19 @@ public final class Config {
   }
 
   private static void ensureConfigExists(Path configPath) throws IOException {
+    // Проверяем существование файла
     if (Files.exists(configPath)) {
       return;
     }
 
+    // СОЗДАЕМ РОДИТЕЛЬСКИЕ ДИРЕКТОРИИ
+    Path parent = configPath.getParent();
+    if (parent != null && !Files.exists(parent)) {
+      Files.createDirectories(parent);
+      System.out.println("[MIU] Created directories: " + parent);
+    }
+
+    // Создаем конфиг с дефолтными серверами
     ObjectNode config = MAPPER.createObjectNode();
     ArrayNode servers = config.putArray("servers");
 

@@ -32,7 +32,7 @@ public class Main {
       UpdatePostResponse response = ApiClient.check(pack, manifest, instance);
 
       ProgressWindow.setStatus("Начало обновления...");
-      Updater.apply(instance, response);
+      UpdaterApplyer.apply(instance, response);
 
       ProgressWindow.setStatus("Запуск Minecraft...");
       Thread.sleep(500);

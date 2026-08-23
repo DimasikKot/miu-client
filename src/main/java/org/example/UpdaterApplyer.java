@@ -8,8 +8,8 @@ import java.util.Map;
 import org.example.model.FileDownloadInfo;
 import org.example.model.UpdatePostResponse;
 
-public final class Updater {
-  private Updater() {
+public final class UpdaterApplyer {
+  private UpdaterApplyer() {
   }
 
   public static void apply(Path instance, UpdatePostResponse response) throws Exception {
@@ -18,10 +18,10 @@ public final class Updater {
     System.out.println();
 
     deleteFiles(instance, response);
-
     downloadFiles(instance, response);
 
-    OptionsWriter.write(instance, response.getNew_resourcepacks());
+    OptionsWriter.writeResourcepacks(instance, response.getNew_resourcepacks());
+    OptionsWriter.writeIncompatibleResourcepacks(instance, response.getNew_incompatible_resourcepacks());
 
     System.out.println();
     System.out.println("Update completed successfully.");
@@ -38,7 +38,8 @@ public final class Updater {
     ProgressWindow.setStatus("Удаление старых файлов...");
     for (String relative : response.getNeed_delete()) {
       Path file = instance.resolve(relative);
-      if (!Files.exists(file)) continue;
+      if (!Files.exists(file))
+        continue;
       Files.delete(file);
       cleanupEmptyParents(instance, file.getParent());
       System.out.println("[OK] Deleted: " + relative);
@@ -86,7 +87,8 @@ public final class Updater {
   private static void cleanupEmptyParents(Path root, Path current) throws IOException {
     while (current != null && !current.equals(root)) {
       try (var stream = Files.list(current)) {
-        if (stream.findAny().isPresent()) return;
+        if (stream.findAny().isPresent())
+          return;
       }
 
       Files.delete(current);

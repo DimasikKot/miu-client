@@ -9,7 +9,6 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
 
 import org.example.model.FileDownloadInfo;
 
@@ -19,7 +18,8 @@ public final class Downloader {
   private Downloader() {
   }
 
-  public static void downloadFile(Path instance, String path, FileDownloadInfo fileInfo) throws IOException, InterruptedException {
+  public static void downloadFile(Path instance, String path, FileDownloadInfo fileInfo)
+      throws IOException, InterruptedException {
     Path destination = instance.resolve(path);
     Files.createDirectories(destination.getParent());
 

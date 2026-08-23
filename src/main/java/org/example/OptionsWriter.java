@@ -10,19 +10,45 @@ public final class OptionsWriter {
   private OptionsWriter() {
   }
 
-  public static void write(Path instance, List<String> resourcePacks) throws IOException {
+  public static void writeResourcepacks(Path instance, List<String> resourcepacks) throws IOException {
     Path options = instance.resolve("minecraft/options.txt");
     List<String> lines = new ArrayList<>();
     if (Files.exists(options)) {
       lines.addAll(Files.readAllLines(options));
     }
 
-    String newLine = "resourcePacks:" + serialize(resourcePacks);
+    String newLine = "resourcePacks:" + serialize(resourcepacks);
     System.out.println("[OK] " + newLine);
     boolean found = false;
 
     for (int i = 0; i < lines.size(); i++) {
       if (lines.get(i).startsWith("resourcePacks:")) {
+        lines.set(i, newLine);
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      lines.add(newLine);
+    }
+    Files.write(options, lines);
+  }
+
+  public static void writeIncompatibleResourcepacks(Path instance, List<String> incompatible_resourcepacks)
+      throws IOException {
+    Path options = instance.resolve("minecraft/options.txt");
+    List<String> lines = new ArrayList<>();
+    if (Files.exists(options)) {
+      lines.addAll(Files.readAllLines(options));
+    }
+
+    String newLine = "incompatibleResourcePacks:" + serialize(incompatible_resourcepacks);
+    System.out.println("[OK] " + newLine);
+    boolean found = false;
+
+    for (int i = 0; i < lines.size(); i++) {
+      if (lines.get(i).startsWith("incompatibleResourcePacks:")) {
         lines.set(i, newLine);
         found = true;
         break;
