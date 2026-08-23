@@ -9,6 +9,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 
 import org.example.model.FileDownloadInfo;
 
@@ -18,24 +19,24 @@ public final class Downloader {
   private Downloader() {
   }
 
-  public static void download(Path instance, FileDownloadInfo file) throws IOException, InterruptedException {
-    Path destination = instance.resolve(file.getPath());
+  public static void downloadFile(Path instance, String path, FileDownloadInfo fileInfo) throws IOException, InterruptedException {
+    Path destination = instance.resolve(path);
     Files.createDirectories(destination.getParent());
 
     if (Files.exists(destination)) {
       String hash = HashUtil.sha256(destination);
-      if (hash.equalsIgnoreCase(file.getSha256())) {
-        System.out.println("[SKIP] " + file.getPath());
+      if (hash.equalsIgnoreCase(fileInfo.getSha256())) {
+        System.out.println("[SKIP] " + path);
         return;
       }
     }
 
     Path temp = destination.resolveSibling(destination.getFileName() + ".download");
-    HttpRequest request = HttpRequest.newBuilder().uri(URI.create(file.getUrl())).GET().build();
+    HttpRequest request = HttpRequest.newBuilder().uri(URI.create(fileInfo.getUrl())).GET().build();
     HttpResponse<InputStream> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
     if (response.statusCode() != 200) {
-      throw new IOException("Download failed: " + response.statusCode() + " " + file.getUrl());
+      throw new IOException("Download failed: " + response.statusCode() + " " + fileInfo.getUrl());
     }
 
     try (InputStream input = response.body()) {
@@ -44,12 +45,12 @@ public final class Downloader {
 
     String hash = HashUtil.sha256(temp);
 
-    if (!hash.equalsIgnoreCase(file.getSha256())) {
+    if (!hash.equalsIgnoreCase(fileInfo.getSha256())) {
       Files.deleteIfExists(temp);
-      throw new IOException("SHA256 mismatch for " + file.getPath());
+      throw new IOException("SHA256 mismatch for " + path);
     }
 
     Files.move(temp, destination, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-    System.out.println("[OK] Downloaded: " + file.getPath());
+    System.out.println("[OK] Downloaded: " + path);
   }
 }

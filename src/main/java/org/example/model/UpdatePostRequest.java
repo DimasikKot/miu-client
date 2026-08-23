@@ -1,5 +1,7 @@
 package org.example.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +11,9 @@ public class UpdatePostRequest {
   private Map<String, FileInfo> files; // path: FileInfo
 
   public UpdatePostRequest() {
+    this.resourcepacks = new ArrayList<>();
+    this.servers = new ArrayList<>();
+    this.files = new HashMap<>();
   }
 
   public UpdatePostRequest(List<String> resourcepacks, List<ServerInfo> servers, Map<String, FileInfo> files) {
