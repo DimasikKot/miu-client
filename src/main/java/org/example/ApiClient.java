@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 
+import org.example.model.MiuClientGetResponse;
 import org.example.model.UpdateGetResponse;
 import org.example.model.UpdatePostRequest;
 import org.example.model.UpdatePostResponse;
@@ -80,6 +81,49 @@ public final class ApiClient {
           return MAPPER.readValue(
               response.body(),
               UpdateGetResponse.class
+          );
+        }
+
+        System.out.println("[MIU] Server returned " + response.statusCode());
+
+      } catch (IOException e) {
+        lastException = e;
+        System.out.println("[MIU] Server unavailable: " + server);
+      }
+    }
+
+    throw new IOException("All MIU servers are unavailable", lastException);
+  }
+
+  public static MiuClientGetResponse getVersion(String pack, Path instance)
+      throws IOException, InterruptedException {
+
+    String encodedPack = URLEncoder.encode(pack, StandardCharsets.UTF_8)
+        .replace("+", "%20");
+
+    IOException lastException = null;
+
+    for (String server : Config.getServers(instance)) {
+      try {
+        System.out.println("[MIU] Trying server: " + server);
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(server + "/api/v2/miu-client/" + encodedPack))
+            .timeout(Duration.ofSeconds(10))
+            .GET()
+            .build();
+
+        HttpResponse<String> response =
+            CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println(response.body());
+
+        if (response.statusCode() == 200) {
+          System.out.println("[MIU] Connected to: " + server);
+
+          return MAPPER.readValue(
+              response.body(),
+              MiuClientGetResponse.class
           );
         }
 

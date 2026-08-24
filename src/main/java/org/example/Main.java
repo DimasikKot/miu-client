@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.example.model.MiuClientGetResponse;
 import org.example.model.UpdateGetResponse;
 import org.example.model.UpdatePostRequest;
 import org.example.model.UpdatePostResponse;
@@ -36,6 +37,9 @@ public class Main {
       for (String dir : scanPaths.getDirs_paths()) {
         System.out.println("    - " + dir);
       }
+
+      MiuClientGetResponse serverVersion = ApiClient.getVersion(pack, instance);
+      System.out.println(serverVersion);
 
       ProgressWindow.setStatus("Сканирование сборки...");
       Thread.sleep(500);
