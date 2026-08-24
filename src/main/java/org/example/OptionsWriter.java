@@ -18,7 +18,7 @@ public final class OptionsWriter {
     }
 
     String newLine = "resourcePacks:" + serialize(resourcepacks);
-    System.out.println("[OK] " + newLine);
+    System.out.println("[PAST] " + newLine);
     boolean found = false;
 
     for (int i = 0; i < lines.size(); i++) {
@@ -44,7 +44,7 @@ public final class OptionsWriter {
     }
 
     String newLine = "incompatibleResourcePacks:" + serialize(incompatible_resourcepacks);
-    System.out.println("[OK] " + newLine);
+    System.out.println("[PAST] " + newLine);
     boolean found = false;
 
     for (int i = 0; i < lines.size(); i++) {

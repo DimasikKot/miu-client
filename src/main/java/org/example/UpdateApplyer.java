@@ -42,23 +42,23 @@ public final class UpdateApplyer {
 
     ServersDat.replaceServers(instance.resolve("minecraft/servers.dat"), response.getNew_servers());
 
-    System.out.println("[OK] new_servers:");
+    System.out.println("[PAST] new_servers:");
     for (ServerInfo server : response.getNew_servers()) {
       System.out.printf("  - %s (%s)%n", server.getName(), server.getIp());
     }
 
     System.out.println();
-    System.out.println("Update completed successfully.");
+    System.out.println("[MIU] Update completed successfully.");
     System.out.println();
   }
 
   private static void deleteFiles(Path instance, UpdatePostResponse response) throws IOException {
     if (response.getNeed_delete().isEmpty()) {
-      System.out.println("Nothing to delete.");
+      System.out.println("[PAST] Nothing to delete.");
       return;
     }
 
-    System.out.println("Deleting files...");
+    System.out.println("[PAST] Deleting files...");
     ProgressWindow.setStatus("Удаление старых файлов...");
 
     for (String relative : response.getNeed_delete()) {
@@ -69,7 +69,7 @@ public final class UpdateApplyer {
       Files.delete(file);
       cleanupEmptyParents(instance, file.getParent());
 
-      System.out.println("[OK] Deleted: " + relative);
+      System.out.println("[PAST] Deleted: " + relative);
     }
   }
 
@@ -77,17 +77,17 @@ public final class UpdateApplyer {
     Map<String, FileDownloadInfo> needDownload = response.getNeed_download();
 
     if (needDownload.isEmpty()) {
-      System.out.println("Nothing to download.");
+      System.out.println("[MIU] Nothing to download.");
       return;
     } else {
       startHelper(instance, pack);
       System.out.println(
-          "[UPDATE] Update required. Stopping Minecraft launch."
+          "[PAST] Update required. Stopping Minecraft launch."
       );
       System.exit(1);
     }
 
-    System.out.println("Downloading files...");
+    System.out.println("[PAST] Downloading files...");
     ProgressWindow.setStatus("Загрузка файлов...");
 
     int currentCount = 0;
@@ -124,11 +124,11 @@ public final class UpdateApplyer {
 
     if (!Files.exists(helperJar)) {
       throw new IOException(
-          "Helper JAR not found: " + helperJar
+          "[PAST] Helper JAR not found: " + helperJar
       );
     }
 
-    System.out.println("[UPDATE] Starting helper...");
+    System.out.println("[PAST] Starting helper...");
 
     new ProcessBuilder(
         "java",
@@ -141,6 +141,6 @@ public final class UpdateApplyer {
         .inheritIO()
         .start();
 
-    System.out.println("[UPDATE] Helper started.");
+    System.out.println("[PAST] Helper started.");
   }
 }
