@@ -24,9 +24,9 @@ public class Main {
     System.out.println("[MIU] Instance : " + instance);
 
     ProgressWindow.show();
-    UpdateGetResponse scanPaths = null;
     try {
       ProgressWindow.setStatus("Смотрим что сканировать...");
+      UpdateGetResponse scanPaths = null;
       try {
         scanPaths = ApiClient.getScanPaths(pack, instance);
       } catch (IOException e) {
