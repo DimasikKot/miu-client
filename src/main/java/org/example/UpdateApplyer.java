@@ -27,13 +27,13 @@ public final class UpdateApplyer {
     }
   }
 
-  public static void apply(Path instance, UpdatePostResponse response) throws Exception {
+  public static void apply(Path instance, String pack, UpdatePostResponse response) throws Exception {
     System.out.println();
     System.out.println("=== Applying update ===");
     System.out.println();
 
     deleteFiles(instance, response);
-    downloadFiles(instance, response);
+    downloadFiles(instance, pack, response);
 
     // TODO Особая обработка mmc-pack.json
 
@@ -73,12 +73,18 @@ public final class UpdateApplyer {
     }
   }
 
-  private static void downloadFiles(Path instance, UpdatePostResponse response) throws Exception {
+  private static void downloadFiles(Path instance, String pack, UpdatePostResponse response) throws Exception {
     Map<String, FileDownloadInfo> needDownload = response.getNeed_download();
 
     if (needDownload.isEmpty()) {
       System.out.println("Nothing to download.");
       return;
+    } else {
+      startHelper(instance, pack);
+      System.out.println(
+          "[UPDATE] Update required. Stopping Minecraft launch."
+      );
+      System.exit(1);
     }
 
     System.out.println("Downloading files...");
@@ -111,5 +117,30 @@ public final class UpdateApplyer {
 
       ProgressWindow.setSpeed(speed);
     }
+  }
+
+  private static void startHelper(Path instance, String pack) throws IOException {
+    Path helperJar = instance.resolve("miu-client-helper.jar");
+
+    if (!Files.exists(helperJar)) {
+      throw new IOException(
+          "Helper JAR not found: " + helperJar
+      );
+    }
+
+    System.out.println("[UPDATE] Starting helper...");
+
+    new ProcessBuilder(
+        "java",
+        "-jar",
+        helperJar.toString(),
+        instance.toString(),
+        pack
+    )
+        .directory(instance.toFile())
+        .inheritIO()
+        .start();
+
+    System.out.println("[UPDATE] Helper started.");
   }
 }
