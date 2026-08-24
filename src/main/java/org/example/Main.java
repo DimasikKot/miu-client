@@ -38,9 +38,6 @@ public class Main {
         System.out.println("    - " + dir);
       }
 
-      MiuClientGetResponse serverVersion = ApiClient.getVersion(pack, instance);
-      System.out.println(serverVersion);
-
       ProgressWindow.setStatus("Сканирование сборки...");
       Thread.sleep(500);
       UpdatePostRequest manifest = UpdatePostRequestBuilder.build(scanPaths, instance);
@@ -51,14 +48,24 @@ public class Main {
 
       ProgressWindow.setStatus("Начало обновления...");
       Thread.sleep(500);
-      UpdateApplyer.apply(instance, pack, response);
+      UpdateApplyer.apply(instance, response);
+
+      MiuClientGetResponse serverVersion = ApiClient.getVersion(pack, instance);
+      System.out.println(serverVersion);
+
+      boolean updaterChanged = UpdateApplyer.isFileChanged(instance, serverVersion.getMiuClientPath(), serverVersion.getMiuClientFile()) || UpdateApplyer.isFileChanged(instance, serverVersion.getMmcPackPath(), serverVersion.getMmcPackFile());
+
+      if (updaterChanged) {
+        UpdateApplyer.startHelper(instance, pack);
+        System.out.println("[PAST] Update required. Stopping Minecraft launch.");
+        System.exit(1);
+      }
 
       ProgressWindow.setStatus("Запуск Minecraft...");
       Thread.sleep(500);
       ProgressWindow.close();
 
-    } catch (
-        IOException e) {
+    } catch (IOException e) {
       ProgressWindow.setStatus("Ошибка: " + e);
       Thread.sleep(5000);
       ProgressWindow.close();
