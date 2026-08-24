@@ -15,7 +15,7 @@ public class Main {
 
     if (args.length == 0) {
       System.err.println("[MIU] Pack name not specified.");
-      System.exit(1);
+      System.exit(0);
     }
 
     String pack = Paths.get(args[1]).toString();
@@ -24,9 +24,15 @@ public class Main {
     System.out.println("[MIU] Instance : " + instance);
 
     ProgressWindow.show();
+    UpdateGetResponse scanPaths = null;
     try {
       ProgressWindow.setStatus("Смотрим что сканировать...");
-      UpdateGetResponse scanPaths = ApiClient.getScanPaths(pack, instance);
+      try {
+        scanPaths = ApiClient.getScanPaths(pack, instance);
+      } catch (IOException e) {
+        System.out.println("[MIU] Error getScanPaths" + e);
+        System.exit(0);
+      }
 
       System.out.println("[MIU] Scan configuration:");
       System.out.println("  files:");
@@ -50,13 +56,23 @@ public class Main {
       Thread.sleep(500);
       UpdateApplyer.apply(instance, response);
 
-      MiuClientGetResponse serverVersion = ApiClient.getVersion(pack, instance);
-      System.out.println(serverVersion);
+      MiuClientGetResponse version = null;
+      try {
+        version = ApiClient.getVersion(pack, instance);
+      } catch (IOException e) {
+        System.out.println("[MIU] Error getVersion" + e);
+        System.exit(0);
+      }
 
-      boolean updaterChanged = UpdateApplyer.isFileChanged(instance, serverVersion.getMiuClientPath(), serverVersion.getMiuClientFile()) || UpdateApplyer.isFileChanged(instance, serverVersion.getMmcPackPath(), serverVersion.getMmcPackFile());
+      boolean updaterChanged = UpdateApplyer.isNeedHelper(instance, version);
 
       if (updaterChanged) {
-        UpdateApplyer.startHelper(instance, pack);
+        try {
+          UpdateApplyer.startHelper(instance, pack);
+        } catch (IOException e) {
+          System.out.println("[MIU] Error startHelper" + e);
+          System.exit(0);
+        }
         System.out.println("[PAST] Update required. Stopping Minecraft launch.");
         System.exit(1);
       }

@@ -26,7 +26,7 @@ public final class Downloader {
     if (Files.exists(destination)) {
       String hash = HashUtil.sha256(destination);
       if (hash.equalsIgnoreCase(fileInfo.getSha256())) {
-        System.out.println("[SKIP] " + path);
+        System.out.println("[PAST] " + path);
         return;
       }
     }
@@ -36,7 +36,7 @@ public final class Downloader {
     HttpResponse<InputStream> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
     if (response.statusCode() != 200) {
-      throw new IOException("Download failed: " + response.statusCode() + " " + fileInfo.getUrl());
+      throw new IOException("[PAST] Download failed: " + response.statusCode() + " " + fileInfo.getUrl());
     }
 
     try (InputStream input = response.body()) {
@@ -47,10 +47,10 @@ public final class Downloader {
 
     if (!hash.equalsIgnoreCase(fileInfo.getSha256())) {
       Files.deleteIfExists(temp);
-      throw new IOException("SHA256 mismatch for " + path);
+      throw new IOException("[PAST] SHA256 mismatch for " + path);
     }
 
     Files.move(temp, destination, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-    System.out.println("[OK] Downloaded: " + path);
+    System.out.println("[PAST] Downloaded: " + path);
   }
 }

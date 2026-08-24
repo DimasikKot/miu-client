@@ -116,7 +116,7 @@ public final class ApiClient {
         HttpResponse<String> response =
             CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println(response.body());
+        System.out.println("[MIU] getVersion" + response.body());
 
         if (response.statusCode() == 200) {
           System.out.println("[MIU] Connected to: " + server);

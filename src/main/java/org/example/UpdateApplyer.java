@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.example.logic.ServersDat;
 import org.example.model.FileDownloadInfo;
+import org.example.model.MiuClientGetResponse;
 import org.example.model.ServerInfo;
 import org.example.model.UpdatePostResponse;
 
@@ -113,8 +114,7 @@ public final class UpdateApplyer {
     }
   }
 
-  public static boolean isFileChanged(Path instance, String path, FileDownloadInfo fileInfo)
-      throws IOException {
+  public static boolean isFileChanged(Path instance, String path, FileDownloadInfo fileInfo) throws IOException {
 
     Path file = instance.resolve(path);
 
@@ -128,27 +128,56 @@ public final class UpdateApplyer {
     return !localSha256.equalsIgnoreCase(fileInfo.getSha256());
   }
 
+  public static boolean isPreLaunchCommandChanged(Path instance, String expectedPreLaunchCommand) throws IOException {
+    Path config = instance.resolve("instance.cfg");
+
+    if (!Files.exists(config)) {
+      return true;
+    }
+
+    for (String line : Files.readAllLines(config)) {
+      if (!line.startsWith("PreLaunchCommand=")) {
+        continue;
+      }
+
+      String actual = line.substring("PreLaunchCommand=".length());
+      return !actual.equals(expectedPreLaunchCommand);
+    }
+
+    // Параметра нет в конфиге
+    return true;
+  }
+
+  public static boolean isNeedHelper(Path instance, MiuClientGetResponse response) throws IOException {
+    boolean miuClientChanged = isFileChanged(instance, response.getMiuClientPath(), response.getMiuClientFile());
+    if (miuClientChanged) {
+      System.out.println("[HELPER] Miu need update");
+    }
+
+    boolean mmcPackChanged = isFileChanged(instance, response.getMmcPackPath(), response.getMmcPackFile());
+    if (mmcPackChanged) {
+      System.out.println("[HELPER] Mmc-pack need update");
+    }
+
+    boolean preLaunchCommandChanged = isPreLaunchCommandChanged(instance, response.getPreLaunchCommand());
+    if (preLaunchCommandChanged) {
+      System.out.println("[HELPER] PreLaunchCommand need update");
+    }
+
+    return miuClientChanged || mmcPackChanged || preLaunchCommandChanged;
+  }
+
   public static void startHelper(Path instance, String pack) throws IOException {
     Path helperJar = instance.resolve("miu-client-helper.jar");
 
     if (!Files.exists(helperJar)) {
-      throw new IOException(
-          "[PAST] Helper JAR not found: " + helperJar
-      );
+      System.out.println("[PAST] Helper JAR not found: " + helperJar);
+      throw new IOException("[PAST] Helper JAR not found: " + helperJar);
     }
 
     System.out.println("[PAST] Starting helper...");
 
-    new ProcessBuilder(
-        "java",
-        "-jar",
-        helperJar.toString(),
-        instance.toString(),
-        pack
-    )
-        .directory(instance.toFile())
-        .inheritIO()
-        .start();
+    new ProcessBuilder("java", "-jar", helperJar.toString(), instance.toString(), pack).directory(instance.toFile()).inheritIO().start();
 
     System.out.println("[PAST] Helper started.");
   }
