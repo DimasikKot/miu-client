@@ -3,6 +3,8 @@ package org.example;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.example.logic.ServersDat;
@@ -128,7 +130,7 @@ public final class UpdateApplyer {
     return !localSha256.equalsIgnoreCase(fileInfo.getSha256());
   }
 
-  public static boolean isPreLaunchCommandChanged(Path instance, String expectedPreLaunchCommand) throws IOException {
+  public static boolean isPreLaunchCommandOld(Path instance, String filePath) throws IOException {
     Path config = instance.resolve("instance.cfg");
 
     if (!Files.exists(config)) {
@@ -141,11 +143,57 @@ public final class UpdateApplyer {
       }
 
       String actual = line.substring("PreLaunchCommand=".length());
-      return !actual.equals(expectedPreLaunchCommand);
+      return !isThirdTokenContains(actual, filePath);
     }
 
     // Параметра нет в конфиге
     return true;
+  }
+
+  /**
+   * Проверяет, что 3-й токен команды содержит указанную подстроку (например, имя jar-файла)
+   * в любой позиции. Токены разделяются пробелами (с учётом кавычек).
+   */
+  private static boolean isThirdTokenContains(String command, String expected) {
+    if (command == null || expected == null || expected.isEmpty()) {
+      return false;
+    }
+
+    List<String> tokens = tokenize(command);
+    if (tokens.size() < 3) {
+      return false;
+    }
+
+    String third = tokens.get(2);
+    return third != null && third.contains(expected);
+  }
+
+  /**
+   * Простой токенизатор с поддержкой кавычек ("...") — пробелы внутри кавычек не разделяют.
+   */
+  private static List<String> tokenize(String command) {
+    List<String> tokens = new ArrayList<>();
+    StringBuilder current = new StringBuilder();
+    boolean inQuotes = false;
+
+    for (int i = 0; i < command.length(); i++) {
+      char c = command.charAt(i);
+      if (c == '"') {
+        inQuotes = !inQuotes;
+        current.append(c);
+      } else if (Character.isWhitespace(c) && !inQuotes) {
+        if (!current.isEmpty()) {
+          tokens.add(current.toString());
+          current.setLength(0);
+        }
+      } else {
+        current.append(c);
+      }
+    }
+    if (!current.isEmpty()) {
+      tokens.add(current.toString());
+    }
+    return tokens;
   }
 
   public static boolean isNeedHelper(Path instance, MiuClientGetResponse response) throws IOException {
@@ -159,12 +207,12 @@ public final class UpdateApplyer {
       System.out.println("[HELPER] Mmc-pack need update");
     }
 
-    boolean preLaunchCommandChanged = isPreLaunchCommandChanged(instance, response.getPreLaunchCommand());
-    if (preLaunchCommandChanged) {
+    boolean preLaunchCommandOld = isPreLaunchCommandOld(instance, response.getMiuClientPath());
+    if (preLaunchCommandOld) {
       System.out.println("[HELPER] PreLaunchCommand need update");
     }
 
-    return miuClientChanged || mmcPackChanged || preLaunchCommandChanged;
+    return miuClientChanged || mmcPackChanged || preLaunchCommandOld;
   }
 
   public static void startHelper(Path instance, String pack) throws IOException {
