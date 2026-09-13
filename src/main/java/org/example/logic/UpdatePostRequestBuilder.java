@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 import org.example.models.FileInfo;
 import org.example.models.ServerInfo;
 import org.example.models.UpdateGetResponse;
 import org.example.models.UpdatePostRequest;
+import org.example.models.Waypoint;
 
 public final class UpdatePostRequestBuilder {
   private UpdatePostRequestBuilder() {
@@ -37,6 +39,14 @@ public final class UpdatePostRequestBuilder {
 
     for (ServerInfo server : servers) {
       System.out.printf("  - %s (%s)%n", server.getName(), server.getIp());
+    }
+
+    Map<String, List<Waypoint>> waypoints = XaeroReader.getWaypoints(instance);
+    request.setWaypoints(waypoints);
+
+    System.out.println("[SCAN] old_waypoints:");
+    for (Map.Entry<String, List<Waypoint>> entry : waypoints.entrySet()) {
+      System.out.printf("  - %s (%d)%n", entry.getKey(), entry.getValue().size());
     }
 
     return request;

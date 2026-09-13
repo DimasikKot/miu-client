@@ -33,7 +33,7 @@ public final class ApiClient {
     for (String server : Config.getServers(instance)) {
       try {
         System.out.println("[MIU] Trying server: " + server);
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(server + "/api/v2/update/" + encodedPack))
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(server + "/api/v3/update/" + encodedPack))
             .timeout(Duration.ofSeconds(10))
             .header("Content-Type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(json))

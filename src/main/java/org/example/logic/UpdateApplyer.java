@@ -9,10 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.example.ProgressWindow;
-import org.example.models.FileDownloadInfo;
-import org.example.models.MiuClientGetResponse;
-import org.example.models.ServerInfo;
-import org.example.models.UpdatePostResponse;
+import org.example.models.*;
 
 public final class UpdateApplyer {
   private UpdateApplyer() {
@@ -47,6 +44,13 @@ public final class UpdateApplyer {
     System.out.println("[PAST] new_servers:");
     for (ServerInfo server : response.getNew_servers()) {
       System.out.printf("  - %s (%s)%n", server.getName(), server.getIp());
+    }
+
+    XaeroWriter.writeWaypoints(instance, response.getNew_waypoints());
+
+    System.out.println("[PAST] new_waypoints:");
+    for (Map.Entry<String, List<Waypoint>> entry : response.getNew_waypoints().entrySet()) {
+      System.out.printf("  - %s (%d)%n", entry.getKey(), entry.getValue().size());
     }
 
     System.out.println();
