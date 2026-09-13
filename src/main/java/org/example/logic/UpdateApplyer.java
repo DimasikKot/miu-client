@@ -212,23 +212,28 @@ public final class UpdateApplyer {
     return tokens;
   }
 
-  public static boolean isNeedHelper(Path instance, MiuClientGetResponse response) throws IOException {
-    boolean miuClientChanged = isFileChanged(instance, response.getMiuClientPath(), response.getMiuClientFile());
+  public static int isNeedHelper(Path instance, MiuClientGetResponse version) throws IOException {
+    int isNeed = 0;
+
+    boolean miuClientChanged = isFileChanged(instance, version.getMiuClientPath(), version.getMiuClientFile());
     if (miuClientChanged) {
+      isNeed = 1;
       System.out.println("[HELPER] Miu need update");
     }
 
-    boolean mmcPackChanged = isMmcFileChanged(instance, response.getMmcPackPath(), response.getMmcPackFile());
-    if (mmcPackChanged) {
-      System.out.println("[HELPER] Mmc-pack need update");
-    }
-
-    boolean preLaunchCommandOld = isPreLaunchCommandOld(instance, response.getMiuClientPath());
+    boolean preLaunchCommandOld = isPreLaunchCommandOld(instance, version.getMiuClientPath());
     if (preLaunchCommandOld) {
+      isNeed = 1;
       System.out.println("[HELPER] PreLaunchCommand need update");
     }
 
-    return miuClientChanged || mmcPackChanged || preLaunchCommandOld;
+    boolean mmcPackChanged = isMmcFileChanged(instance, version.getMmcPackPath(), version.getMmcPackFile());
+    if (mmcPackChanged) {
+      isNeed = 2;
+      System.out.println("[HELPER] Mmc-pack need update");
+    }
+
+    return isNeed;
   }
 
   public static void startHelper(Path instance, String pack) throws IOException {

@@ -66,9 +66,9 @@ public class Main {
         System.exit(0);
       }
 
-      boolean updaterChanged = UpdateApplyer.isNeedHelper(instance, version);
+      int isNeed = UpdateApplyer.isNeedHelper(instance, version);
 
-      if (updaterChanged) {
+      if (isNeed > 0) {
         try {
           UpdateApplyer.startHelper(instance, pack);
         } catch (IOException e) {
@@ -76,7 +76,9 @@ public class Main {
           System.exit(0);
         }
         System.out.println("[PAST] Update required. Stopping Minecraft launch.");
-        System.exit(1);
+        if (isNeed == 2) {
+          System.exit(1);
+        }
       }
 
       ProgressWindow.setStatus("Запуск Minecraft...");
