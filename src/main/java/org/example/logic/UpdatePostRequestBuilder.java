@@ -14,7 +14,7 @@ public final class UpdatePostRequestBuilder {
   private UpdatePostRequestBuilder() {
   }
 
-  public static UpdatePostRequest build(UpdateGetResponse scanPaths, Path instance) throws IOException, InterruptedException {
+  public static UpdatePostRequest build(UpdateGetResponse scanPaths, Path instance) throws IOException {
     UpdatePostRequest request = new UpdatePostRequest();
 
     // Сканируем отдельные файлы
