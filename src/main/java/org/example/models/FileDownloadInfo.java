@@ -1,25 +1,25 @@
-package org.example.model;
+package org.example.models;
 
-public class FileInfo {
-  private String name;
+public class FileDownloadInfo {
+  private String url;
   private String sha256;
   private int size;
 
-  public FileInfo() {
+  public FileDownloadInfo() {
   }
 
-  public FileInfo(String name, String sha256, int size) {
-    this.name = name;
+  public FileDownloadInfo(String url, String sha256, int size) {
+    this.url = url;
     this.sha256 = sha256;
     this.size = size;
   }
 
-  public String getName() {
-    return name;
+  public String getUrl() {
+    return url;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setUrl(String url) {
+    this.url = url;
   }
 
   public String getSha256() {

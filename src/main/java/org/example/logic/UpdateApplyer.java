@@ -1,4 +1,4 @@
-package org.example;
+package org.example.logic;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.example.logic.ServersDat;
-import org.example.model.FileDownloadInfo;
-import org.example.model.MiuClientGetResponse;
-import org.example.model.ServerInfo;
-import org.example.model.UpdatePostResponse;
+import org.example.ProgressWindow;
+import org.example.models.FileDownloadInfo;
+import org.example.models.MiuClientGetResponse;
+import org.example.models.ServerInfo;
+import org.example.models.UpdatePostResponse;
 
 public final class UpdateApplyer {
   private UpdateApplyer() {

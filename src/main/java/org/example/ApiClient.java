@@ -10,10 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 
-import org.example.model.MiuClientGetResponse;
-import org.example.model.UpdateGetResponse;
-import org.example.model.UpdatePostRequest;
-import org.example.model.UpdatePostResponse;
+import org.example.models.MiuClientGetResponse;
+import org.example.models.UpdateGetResponse;
+import org.example.models.UpdatePostRequest;
+import org.example.models.UpdatePostResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,7 +27,6 @@ public final class ApiClient {
   public static UpdatePostResponse check(String pack, UpdatePostRequest manifest, Path instance)
       throws IOException, InterruptedException {
     String json = MAPPER.writeValueAsString(manifest);
-    // System.out.println("Sending request: " + json); // TODO УБРАТЬ
     String encodedPack = URLEncoder.encode(pack, StandardCharsets.UTF_8).replace("+", "%20");
     IOException lastException = null;
 

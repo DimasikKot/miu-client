@@ -1,4 +1,4 @@
-package org.example;
+package org.example.logic;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import org.example.model.FileDownloadInfo;
+import org.example.models.FileDownloadInfo;
 
 public final class Downloader {
   private static final HttpClient CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();

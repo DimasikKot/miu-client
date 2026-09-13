@@ -6,7 +6,7 @@ import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 
-import org.example.model.ServerInfo;
+import org.example.models.ServerInfo;
 
 import java.io.IOException;
 import java.io.InputStream;

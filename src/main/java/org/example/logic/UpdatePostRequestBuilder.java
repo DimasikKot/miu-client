@@ -1,16 +1,14 @@
-package org.example;
+package org.example.logic;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import org.example.logic.OptionsReader;
-import org.example.logic.ServersDat;
-import org.example.model.FileInfo;
-import org.example.model.ServerInfo;
-import org.example.model.UpdateGetResponse;
-import org.example.model.UpdatePostRequest;
+import org.example.models.FileInfo;
+import org.example.models.ServerInfo;
+import org.example.models.UpdateGetResponse;
+import org.example.models.UpdatePostRequest;
 
 public final class UpdatePostRequestBuilder {
   private UpdatePostRequestBuilder() {

@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.example.model.MiuClientGetResponse;
-import org.example.model.UpdateGetResponse;
-import org.example.model.UpdatePostRequest;
-import org.example.model.UpdatePostResponse;
+import org.example.logic.UpdateApplyer;
+import org.example.logic.UpdatePostRequestBuilder;
+import org.example.models.MiuClientGetResponse;
+import org.example.models.UpdateGetResponse;
+import org.example.models.UpdatePostRequest;
+import org.example.models.UpdatePostResponse;
 
 public class Main {
   public static void main(String[] args) throws Exception {
