@@ -72,7 +72,11 @@ public final class UpdateApplyer {
 
       if (!Files.exists(file)) continue;
 
-      Files.delete(file);
+      try {
+        Files.delete(file);
+      } catch (IOException e) {
+        System.out.println("[PAST] ERROR PASTE FILE" + e);
+      }
       cleanupEmptyParents(instance, file.getParent());
 
       System.out.println("[PAST] Deleted: " + relative);

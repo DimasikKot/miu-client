@@ -62,7 +62,7 @@ public class Main {
       try {
         version = ApiClient.getVersion(pack, instance);
       } catch (IOException e) {
-        System.out.println("[MIU] Error getVersion" + e);
+        System.out.println("[MIU] ERROR getVersion" + e);
         System.exit(0);
       }
 
@@ -72,7 +72,7 @@ public class Main {
         try {
           UpdateApplyer.startHelper(instance, pack);
         } catch (IOException e) {
-          System.out.println("[MIU] Error startHelper" + e);
+          System.out.println("[MIU] ERROR startHelper starting" + e);
           System.exit(0);
         }
         System.out.println("[PAST] Update required. Stopping Minecraft launch.");
