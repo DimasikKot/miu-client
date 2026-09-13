@@ -3,6 +3,7 @@ package org.example;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +38,6 @@ public final class UpdateApplyer {
 
     deleteFiles(instance, response);
     downloadFiles(instance, response);
-
-    // TODO Особая обработка mmc-pack.json
 
     OptionsWriter.writeResourcepacks(instance, response.getNew_resourcepacks());
     OptionsWriter.writeIncompatibleResourcepacks(instance, response.getNew_incompatible_resourcepacks());
@@ -117,15 +116,28 @@ public final class UpdateApplyer {
   }
 
   public static boolean isFileChanged(Path instance, String path, FileDownloadInfo fileInfo) throws IOException {
-
     Path file = instance.resolve(path);
-
-    // Файла нет — считаем, что он отличается
     if (!Files.exists(file)) {
       return true;
     }
 
     String localSha256 = HashUtil.sha256(file);
+
+    return !localSha256.equalsIgnoreCase(fileInfo.getSha256());
+  }
+
+  public static boolean isMmcFileChanged(Path instance, String path, FileDownloadInfo fileInfo) throws IOException {
+    Path file = instance.resolve(path);
+    if (!Files.exists(file)) {
+      return true;
+    }
+
+    String localSha256;
+    try {
+      localSha256 = HashUtil.normalizedSha256(file);
+    } catch (NoSuchAlgorithmException e) {
+      throw new IOException(e);
+    }
 
     return !localSha256.equalsIgnoreCase(fileInfo.getSha256());
   }
@@ -202,7 +214,7 @@ public final class UpdateApplyer {
       System.out.println("[HELPER] Miu need update");
     }
 
-    boolean mmcPackChanged = isFileChanged(instance, response.getMmcPackPath(), response.getMmcPackFile());
+    boolean mmcPackChanged = isMmcFileChanged(instance, response.getMmcPackPath(), response.getMmcPackFile());
     if (mmcPackChanged) {
       System.out.println("[HELPER] Mmc-pack need update");
     }
